@@ -1,12 +1,4 @@
-﻿  NR101128885-Assignment1.cpp
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(42): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(43): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(86): warning C4305: '=': truncation from 'double' to 'GLfloat'
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(87): warning C4305: '=': truncation from 'double' to 'GLfloat'
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(89): warning C4305: '=': truncation from 'double' to 'GLfloat'
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(90): warning C4305: '=': truncation from 'double' to 'GLfloat'
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(92): warning C4305: '=': truncation from 'double' to 'GLfloat'
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(93): warning C4305: '=': truncation from 'double' to 'GLfloat'
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(95): warning C4305: '=': truncation from 'double' to 'GLfloat'
-d:\projects\gbc\04\game2012\example_code\firstexample_demo\firstexample\nr101128885-assignment1.cpp(96): warning C4305: '=': truncation from 'double' to 'GLfloat'
-  FirstExample.vcxproj -> D:\Projects\GBC\04\GAME2012\Example_Code\FirstExample_Demo\Debug\FirstExample.exe
+﻿  NR101128885-Assignment2.cpp
+d:\projects\gbc\04\game2012\gbc_game2012\firstexample_demo\firstexample\nr101128885-assignment2.cpp(67): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+d:\projects\gbc\04\game2012\gbc_game2012\firstexample_demo\firstexample\nr101128885-assignment2.cpp(148): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  FirstExample.vcxproj -> D:\Projects\GBC\04\GAME2012\gbc_game2012\FirstExample_Demo\Debug\FirstExample.exe

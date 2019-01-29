@@ -1,13 +1,15 @@
-#version 430 core
-layout(location = 0) in vec4 vPosition;
-layout(location = 1) in vec4 vColor;
-uniform mat4 Model;
+#version 410 core
+layout(location = 0) in vec3 vertex_position;
+layout(location = 1) in vec3 vertex_colour;
 
-out vec4 myColor;
+out vec3 myColor;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
 
 void main()
-{	
-	myColor = vColor;
-	gl_Position = Model * vPosition;
-	
+{
+    myColor = vertex_colour;
+	gl_Position = MVP * vec4(vertex_position,1.0f);
+
 }
