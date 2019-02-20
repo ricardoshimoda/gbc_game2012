@@ -1,4 +1,2 @@
 ﻿  NR101128885-Assignment2.cpp
-d:\projects\gbc\04\game2012\gbc_game2012\firstexample_demo\firstexample\nr101128885-assignment2.cpp(67): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\firstexample_demo\firstexample\nr101128885-assignment2.cpp(148): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   FirstExample.vcxproj -> D:\Projects\GBC\04\GAME2012\gbc_game2012\FirstExample_Demo\Debug\FirstExample.exe
