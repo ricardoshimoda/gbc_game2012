@@ -120,36 +120,36 @@ void init(void)
 		/*
 		 * This is the first set - from 0 to 7
 		 */
-		-halfCubeSide, -halfCubeSide,  halfCubeSide,
-		 halfCubeSide, -halfCubeSide,  halfCubeSide,
-		 halfCubeSide,  halfCubeSide,  halfCubeSide,
-		-halfCubeSide,  halfCubeSide,  halfCubeSide,
-		-halfCubeSide, -halfCubeSide, -halfCubeSide,
-		 halfCubeSide, -halfCubeSide, -halfCubeSide,
-		 halfCubeSide,  halfCubeSide, -halfCubeSide,
-		-halfCubeSide,  halfCubeSide, -halfCubeSide,
+		-halfCubeSide, -halfCubeSide,  halfCubeSide,	// 0,1                            
+		 halfCubeSide, -halfCubeSide,  halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide,  halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide,  halfCubeSide,	// 0,0
+		-halfCubeSide, -halfCubeSide, -halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide, -halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide, -halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide, -halfCubeSide,	// 0,0
 		/*
 		 * This is the second set - from 8 to 15
 		 */
-		-halfCubeSide, -halfCubeSide,  halfCubeSide,
-		 halfCubeSide, -halfCubeSide,  halfCubeSide,
-		 halfCubeSide,  halfCubeSide,  halfCubeSide,
-		-halfCubeSide,  halfCubeSide,  halfCubeSide,
-		-halfCubeSide, -halfCubeSide, -halfCubeSide,
-		 halfCubeSide, -halfCubeSide, -halfCubeSide,
-		 halfCubeSide,  halfCubeSide, -halfCubeSide,
-		-halfCubeSide,  halfCubeSide, -halfCubeSide,
+		-halfCubeSide, -halfCubeSide,  halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide,  halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide,  halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide,  halfCubeSide,	// 0,0
+		-halfCubeSide, -halfCubeSide, -halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide, -halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide, -halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide, -halfCubeSide,	// 0,0
 		/*
 		 * This is the third set - from 16 to 23
 		 */
-		-halfCubeSide, -halfCubeSide,  halfCubeSide,
-		 halfCubeSide, -halfCubeSide,  halfCubeSide,
-		 halfCubeSide,  halfCubeSide,  halfCubeSide,
-		-halfCubeSide,  halfCubeSide,  halfCubeSide,
-		-halfCubeSide, -halfCubeSide, -halfCubeSide,
-		 halfCubeSide, -halfCubeSide, -halfCubeSide,
-		 halfCubeSide,  halfCubeSide, -halfCubeSide,
-		-halfCubeSide,  halfCubeSide, -halfCubeSide
+		-halfCubeSide, -halfCubeSide,  halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide,  halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide,  halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide,  halfCubeSide,	// 0,0
+		-halfCubeSide, -halfCubeSide, -halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide, -halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide, -halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide, -halfCubeSide		// 0,0
 	};
 
 	GLuint points_vbo = 0;
@@ -203,28 +203,36 @@ void init(void)
 	/*
 	 * now we establish the array for mapping the texture
 	 */
+	/*
+	float texMapCube[] = {
+		0.f,1.f, // Front 
+		1.f,1.f,
+		1.f,0.f,
+		0.f,0.f,
+		0.f,1.f, // Back 
+		1.f,1.f,
+		1.f,0.f,
+		0.f,0.f,
+		0.f,1.f, // Bottom 
+		1.f,1.f,
+		1.f,0.f,
+		0.f,0.f,
+		0.f,1.f, // Top 
+		1.f,1.f,
+		1.f,0.f,
+		0.f,0.f,
+		0.f,1.f, // Right
+		1.f,1.f,
+		1.f,0.f,
+		0.f,0.f,
+		0.f,1.f, // Left
+		1.f,1.f,
+		1.f,0.f,
+		0.f,0.f
+	};
+	*/
 	float texMapCube[] = {
 		0.f,1.f, /* Front */
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, /* Back */
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, /* Top */
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, /* Bottom */
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, /*Right*/
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, /*Left*/
 		1.f,1.f,
 		1.f,0.f,
 		0.f,0.f
@@ -246,9 +254,6 @@ void init(void)
 		// front
 		0, 1, 2,
 		2, 3, 0,
-		// back
-		4, 7, 6,
-		6, 5, 4,
 		// top
 		11, 10, 14,
 		14, 15, 11, 
@@ -260,7 +265,10 @@ void init(void)
 		16 + 6, 16 + 2, 16 + 1,
 		// left
 		16 + 3, 16 + 7, 16 + 4,
-		16 + 4, 16 + 0, 16 + 3
+		16 + 4, 16 + 0, 16 + 3,
+		// back
+		4, 7, 6,
+		6, 5, 4
 	};
 
 	GLuint cube_IBO;
@@ -342,8 +350,8 @@ void init(void)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, cube_tex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthRubik, heightRubik, 0, GL_RGB, GL_UNSIGNED_BYTE, imageRubik);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glUniform1i(glGetUniformLocation(program, "texture0"), 0);
@@ -353,8 +361,8 @@ void init(void)
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, pyramid_tex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthBonus, heightBonus, 0, GL_RGB, GL_UNSIGNED_BYTE, imageBonus);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glUniform1i(glGetUniformLocation(program, "texture0"), 1);
@@ -397,26 +405,8 @@ void drawCubes(int numOfSquares) {
 		glm::vec3(0, 1, 0)			// Head is up (set to 0,-1,0 to look upside-down)
 	);
 	glBindVertexArray(gVAO);
-	for (int i = 0; i < numOfSquares; i++) {
-		switch (i % 4) {
-		case 0:
-			transformObject(1, Y_AXIS, rotationAngleCube1, glm::vec3(i / 4 * (0.6 + sqrt(2) / 2), 0.45, 0));
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
-			break;
-		case 1:
-			transformObject(1, Y_AXIS, rotationAngleCube2, glm::vec3(i / 4 * (0.6 + sqrt(2) / 2), -0.45, 0));
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
-			break;
-		case 2:
-			transformObject(1, Y_AXIS, rotationAngleCube1, glm::vec3(-i / 4 * (0.6 + sqrt(2) / 2), 0.45, 0));
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
-			break;
-		case 3:
-			transformObject(1, Y_AXIS, rotationAngleCube2, glm::vec3(-i / 4 * (0.6 + sqrt(2) / 2), -0.45, 0));
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
-			break;
-		}
-	}
+	transformObject(1, Y_AXIS, rotationAngleCube1, glm::vec3(0, 0.45, 0));
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
 	rotationAngleCube1 += rotationSpeed;
 	if (rotationAngleCube1 == 360)
 		rotationAngleCube1 = 0;
