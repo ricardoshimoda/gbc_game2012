@@ -1,0 +1,4 @@
+﻿D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (FirstExample.vcxproj, ThirdAssignment.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  NR101128885-Assignment3.cpp
+d:\projects\gbc\04\game2012\gbc_game2012\fourthassignment\firstexample\nr101128885-assignment3.cpp(265): warning C4305: 'initializing': truncation from 'double' to 'float'
+  FirstExample.vcxproj -> D:\Projects\GBC\04\GAME2012\gbc_game2012\FourthAssignment\Debug\FourthAssignment.exe

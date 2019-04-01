@@ -35,13 +35,16 @@ using namespace std;
 int numberOfSquares = 1;
 float rotationAngleCube1 = 45.0f;
 float rotationAngleCube2 = -90.0f;
-float rotationSpeed = 0.f;
+float rotationSpeed = 0.2f;
 const int screenSize = 848;
 float halfCubeSide = 0.65f;
 
-float cameraX = 4.0f;
-float cameraY = 3.0f;
-float cameraZ = 3.0f;
+float halfPyramidSide = 0.65f;
+float pyramidHeight = 2.0f;
+
+float cameraX = 0.0f;
+float cameraY = 5.0f; /* Just a nicer perspective than 3,3,4, you know */
+float cameraZ = 10.0f;
 float cameraStep = 0.1f;
 
 #define X_AXIS glm::vec3(1,0,0)
@@ -60,31 +63,6 @@ GLuint program;
 
 /****************************************************************************************/
 
-/*
-void recolorSquare() {
-	float r = (float)rand() / RAND_MAX;
-	float g = (float)rand() / RAND_MAX;
-	float b = (float)rand() / RAND_MAX;
-
-	float colours[] = {
-		r, g,  b,
-		r, g,  b,
-		r, g,  b,
-		r, g,  b
-	};
-	glBufferData(GL_ARRAY_BUFFER, sizeof(colours), colours, GL_STATIC_DRAW);
-}
-
-void generateRandomColoredSquares(int numOfColors) {
-	srand(time(NULL));
-	glGenBuffers(numOfColors, colours_vbo);
-
-	for (int i = 0; i < numOfColors; i++) {
-		glBindBuffer(GL_ARRAY_BUFFER, colours_vbo[i]);
-		recolorSquare();
-	}
-}
-*/
 
 void init(void)
 {
@@ -204,39 +182,71 @@ void init(void)
 	 * now we establish the array for mapping the texture
 	 */
 	/*
+	 * This is the array for uv mapping - not a rubik, just unrolled stuff
+	 */
+	/*
 	float texMapCube[] = {
-		0.f,1.f, // Front 
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, // Back 
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, // Bottom 
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, // Top 
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, // Right
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f,
-		0.f,1.f, // Left
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f
+		0.f,1.f, // Front_1
+		1.f,1.f, // Front_2
+		1.f,0.f, // Front_3
+		0.f,0.f, // Front_4
+
+		0.f,1.f, // Back_1 
+		1.f,1.f, // Back_2
+		1.f,0.f, // Back_3
+		0.f,0.f, // Back_4
+
+		0.f,1.f, // Bottom_1 
+		0.f,0.f, // Botton_4
+		1.f,1.f, // Top_2
+		0.f,1.f, // Top_1
+		1.f,1.f, // Bottom_2
+		1.f,0.f, // Bottom_3
+		1.f,0.f, // Top_3
+		0.f,0.f, // top_4
+
+		0.f,0.f, // Left_4
+		0.f,1.f, // Right_1
+		0.f,0.f, // Right_4
+		0.f,1.f, // Left_1
+		1.f,0.f, // Left_3
+		1.f,1.f, // Right_2
+		1.f,0.f, // Right_3
+		1.f,1.f  // Left_2
 	};
 	*/
+
 	float texMapCube[] = {
-		0.f,1.f, /* Front */
-		1.f,1.f,
-		1.f,0.f,
-		0.f,0.f
+		0.25f,1.f, // 00
+		0.5f,1.f, // 01
+		0.5f,2.0/3.0f, // 02
+		0.25f,2.0/3.0f, // 03
+
+		0.25f,0.f, // 04 
+		0.5f,0.f, // 05
+		0.5f,1.0/3.0f, // 06
+		0.25f,1.0/3.0f, // 07
+
+		1.0f,2.0/3.0f, // 08 
+		0.75f,2.0/3.0f, // 09
+
+		0.5f,2.0/3.0f, // 10
+		0.25f,2.0/3.0f, // 11
+		1.f,1.0/3.0f, // 12
+		0.75f,1.0/3.0f, // 13
+		0.5f,1.0/3.0f, // 14
+		0.25f,1.0/3.0f, // 15
+
+		0.f,2.0/3.f, // 16
+		0.75f,2.0/3.f, // 17
+		0.5f,2.0/3.f, // 18
+		0.25f,2.0/3.f, // 19
+		0.f,1.0/3.0f, // 20
+		0.75f,1.0/3.f, // 21
+		0.5f,1.0/3.f, // 22
+		0.25f,1.0/3.f  // 23
 	};
+
 
 	GLuint texture_vbo = 0;
 	glGenBuffers(1, &texture_vbo);
@@ -254,6 +264,9 @@ void init(void)
 		// front
 		0, 1, 2,
 		2, 3, 0,
+		// back
+		4, 7, 6,
+		6, 5, 4,
 		// top
 		11, 10, 14,
 		14, 15, 11, 
@@ -261,30 +274,38 @@ void init(void)
 		8, 12, 13,
 		13, 9, 8,
 		// right
-		16 + 1, 16 + 5, 16 + 6,
-		16 + 6, 16 + 2, 16 + 1,
+		17, 21, 22,
+		22, 18, 17,
 		// left
-		16 + 3, 16 + 7, 16 + 4,
-		16 + 4, 16 + 0, 16 + 3,
-		// back
-		4, 7, 6,
-		6, 5, 4
+		19, 23, 20,
+		20, 16, 19
 	};
 
 	GLuint cube_IBO;
 	glGenBuffers(1, &cube_IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_IBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_index_array), cube_index_array, GL_STATIC_DRAW);
-	//generateRandomColoredSquares(5);
 
+	/*
+	 * Changing the VBO, now we are going for the pyramids
+	 */
 	glGenVertexArrays(1, &gVAOPyramid);
 	glBindVertexArray(gVAOPyramid);
 	float pyramidPoints[] = {
-		-0.45f, 0.0f, 0.45f,
-		 0.45f, 0.0f, 0.45f,
-		 0.45f, 0.0f, -0.45f,
-		-0.45f, 0.0f, -0.45f,
-		 0.0f, 0.45f, 0.0f
+		-halfPyramidSide, 0.0f,  halfPyramidSide, // 00-FRONT_1
+		 halfPyramidSide, 0.0f,  halfPyramidSide, // 01-FRONT_2
+		 halfPyramidSide, 0.0f, -halfPyramidSide, // 02-BACK_1
+		-halfPyramidSide, 0.0f, -halfPyramidSide, // 03-BACK_2
+		 0.0f, pyramidHeight, 0.0f,				  // 04-TOP_1
+		-halfPyramidSide, 0.0f,  halfPyramidSide, // 05-LEFT_2
+		 halfPyramidSide, 0.0f,  halfPyramidSide, // 06-RIGHT_1
+		 halfPyramidSide, 0.0f, -halfPyramidSide, // 07-RIGHT_2
+		-halfPyramidSide, 0.0f, -halfPyramidSide, // 08-LEFT_1
+		 0.0f, pyramidHeight, 0.0f,				  // 09-TOP_2
+		-halfPyramidSide, 0.0f,  halfPyramidSide, // 10-BOTTOM_1
+		 halfPyramidSide, 0.0f,  halfPyramidSide, // 11-BOTTOM_2
+		 halfPyramidSide, 0.0f, -halfPyramidSide, // 12-BOTTOM_3
+		-halfPyramidSide, 0.0f, -halfPyramidSide  // 13-BOTTOM_4
 	};
 
 	GLuint pyramid_points_vbo = 0;
@@ -314,22 +335,53 @@ void init(void)
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
 
+
+	float texMapPyramid[] = {
+		// Front and back
+		0.f, 1.f,	// 00
+		1.f, 1.f,	// 01
+		0.f, 1.f,	// 02
+		1.f, 1.f,	// 03
+		0.5f, 0.f, // 04 
+
+		1.f,1.f, // 05
+		0.f,1.f, // 06
+		1.f,1.f, // 07
+		0.f,1.f, // 08 
+		0.5f,0.f, // 09
+
+		0.f, 0.f, // 10
+		0.f,1.f, // 11
+		1.f,1.f, // 12
+		1.f,0.f // 13
+	};
+
+	GLuint pyramid_texture_vbo = 0;
+	glGenBuffers(1, &pyramid_texture_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, pyramid_texture_vbo);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texMapPyramid), texMapPyramid, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+
+
 	/*
-	 * Faces have been defined counter-clockwise (just because I knid of prefer this way)
+	 * Faces have been defined counter-clockwise (just because I kind of prefer this way)
 	 */
 	
 	GLushort pyramid_index_array[] = {
-		// bottom
-		0, 1, 2,
-		2, 3, 0,
 		// front
-		0, 1, 4,
-		// right
-		1, 2, 4,
+		0,1,4,
 		// back
-		2, 3, 4,
+		2,3,4,
 		// left
-		3, 0, 4
+		8,5,9,
+		// right
+		6,7,9,
+		// bottom
+		10,13,12,
+		12,11,10
 	};
 
 	GLuint pyramid_IBO;
@@ -368,7 +420,6 @@ void init(void)
 	glUniform1i(glGetUniformLocation(program, "texture0"), 1);
 
 	// Restablishes Rubik texture as the current one
-	glUniform1i(glGetUniformLocation(program, "texture0"), 0);
 
 
 
@@ -399,14 +450,19 @@ void transformObject(float scale, glm::vec3 rotationAxis, float rotationAngle, g
 
 void drawCubes(int numOfSquares) {
 
+	glUniform1i(glGetUniformLocation(program, "texture0"), 0);
 	View = glm::lookAt(
 		glm::vec3(cameraX, cameraY, cameraZ),		// Camera is at (4,3,3), in World Space
 		glm::vec3(0, 0, 0),			// Camera Looking at the origin
 		glm::vec3(0, 1, 0)			// Head is up (set to 0,-1,0 to look upside-down)
 	);
 	glBindVertexArray(gVAO);
-	transformObject(1, Y_AXIS, rotationAngleCube1, glm::vec3(0, 0.45, 0));
+	transformObject(1, Y_AXIS, rotationAngleCube1, glm::vec3(-3.0, 0.0, 0.0));
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+
+	transformObject(1, Y_AXIS, rotationAngleCube2, glm::vec3(3.0, 0.0, 0.0));
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+
 	rotationAngleCube1 += rotationSpeed;
 	if (rotationAngleCube1 == 360)
 		rotationAngleCube1 = 0;
@@ -420,12 +476,11 @@ void drawCubes(int numOfSquares) {
 	transformDistortedObject(4.0f, 0.2f, 4.0f, Y_AXIS, 0, glm::vec3(0, -1.00, 0));
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
 	*/
-	/*
-	-- This draws the pyramid
+	//-- This draws the pyramid
+	glUniform1i(glGetUniformLocation(program, "texture0"), 1);
 	glBindVertexArray(gVAOPyramid);
-	transformObject(1.0f, Y_AXIS, 0, glm::vec3(0, 1.0, 0));
+	transformObject(1.0f, Y_AXIS, 0, glm::vec3(0, 0.0, 0));// pyramid in the middle
 	glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, 0);
-	*/
 }
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
