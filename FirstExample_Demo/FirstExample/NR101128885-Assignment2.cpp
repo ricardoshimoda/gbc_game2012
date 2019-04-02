@@ -285,19 +285,19 @@ void drawCubes(int numOfSquares) {
 		switch (i % 4) {
 		case 0:
 			transformObject(1, Y_AXIS, rotationAngleCube1, glm::vec3(i / 4 * (0.6 + sqrt(2) / 2), 0.45, 0));
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 			break;
 		case 1:
 			transformObject(1, Y_AXIS, rotationAngleCube2, glm::vec3(i / 4 * (0.6 + sqrt(2) / 2), -0.45, 0));
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 			break;
 		case 2:
 			transformObject(1, Y_AXIS, rotationAngleCube1, glm::vec3(-i / 4 * (0.6 + sqrt(2) / 2), 0.45, 0));
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 			break;
 		case 3:
 			transformObject(1, Y_AXIS, rotationAngleCube2, glm::vec3(-i / 4 * (0.6 + sqrt(2) / 2), -0.45, 0));
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 			break;
 		}
 	}

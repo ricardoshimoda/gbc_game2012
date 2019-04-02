@@ -87,7 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LoadShaders.cpp" />
-    <ClCompile Include="NR101128885-Assignment3.cpp" />
+    <ClCompile Include="NR101128885-Assignment4.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="triangles.frag" />

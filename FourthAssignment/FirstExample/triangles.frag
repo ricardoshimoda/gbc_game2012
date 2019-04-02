@@ -1,3 +1,4 @@
+
 #version 430 core
 in vec3 myColor;
 in vec2 texCoord;
@@ -35,5 +36,7 @@ void main()
 
 	vec3 ambient = vec3(0.2,0.2,0.2);
 
-	fColor = vec4((ambient + totalLight) * texture(texture0, texCoord).rgb,1.0);
+	//fColor = vec4(texture(texture0, texCoord).rgb,1.0);
+
+	fColor = vec4((ambient + totalLight ) * texture(texture0, texCoord).rgb,1.0);
 }
