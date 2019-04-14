@@ -1,0 +1,4 @@
+﻿  GeometryGenerator.cpp
+d:\projects\gbc\04\game2012\assignment 3-ekin\firstexample\geometrygenerator.cpp(133): warning C4305: 'initializing': truncation from 'double' to 'float'
+d:\projects\gbc\04\game2012\assignment 3-ekin\firstexample\geometrygenerator.cpp(471): warning C4305: 'initializing': truncation from 'double' to 'float'
+  FirstExample.vcxproj -> D:\Projects\GBC\04\GAME2012\Assignment 3-Ekin\Debug\FirstExample.exe
