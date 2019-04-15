@@ -44,24 +44,26 @@ float cameraStep = 0.1f;
 /*
  * Light sources
  */
+
+/*
 float lightX = 0.0f;
 float lightY = 0.1f;
 float lightZ = 0.0f;
 float lightStep = 0.05f;
 glm::vec3 lightColor = glm::vec3(1,1,1);
-
 struct PointLight {
 	GLuint posHandle;
 	GLuint colorHandle;
 	GLuint strengthHandle;
 };
-
 struct DirectLight {
 	GLuint dirHandle;
 	GLuint colorHandle;
 	GLuint strengthHandle;
 };
+*/
 glm::vec3 currentLightPos;
+
 
 struct Light {
 	GLuint colorHandle;
@@ -107,14 +109,14 @@ void initLights() {
 	pointLights[1].falloffEndHandle = glGetUniformLocation(program, "pointLights[1].falloffEnd");
 
 	// second, pass data
-	glUniform3fv(pointLights[0].colorHandle, 1, glm::value_ptr(glm::vec3(1.0f, 0.0f, 0.0f)));
+	glUniform3fv(pointLights[0].colorHandle, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 	currentLightPos = glm::vec3(-0.3f, 0.1f, 0.2f);
 	glUniform3fv(pointLights[0].posHandle, 1, glm::value_ptr(currentLightPos));
 	glUniform1f(pointLights[0].strengthHandle, 1.0f);
 	glUniform1f(pointLights[0].falloffStartHandle, 1.0f);
 	glUniform1f(pointLights[0].falloffEndHandle, 50.0f);
 
-	glUniform3fv(pointLights[1].colorHandle, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 1.0f)));
+	glUniform3fv(pointLights[1].colorHandle, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 	glUniform3fv(pointLights[1].posHandle, 1, glm::value_ptr(glm::vec3(0.3f, 0.1f, 0.0f)));
 	glUniform1f(pointLights[1].strengthHandle, 1.0f);
 	glUniform1f(pointLights[1].falloffStartHandle, 1.0f);
@@ -413,8 +415,6 @@ void transformObject(float scale, glm::vec3 rotationAxis, float rotationAngle, g
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(ViewID, 1, GL_FALSE, &View[0][0]);
 	glUniformMatrix4fv(ModelID, 1, GL_FALSE, &Model[0][0]);
-	glUniform3f(LightColID, lightColor.x, lightColor.y, lightColor.z);
-	glUniform3f(LightPosID, lightX, lightY, lightZ);
 
 }
 
@@ -487,6 +487,7 @@ e. The camera shoul
 	case 'R':
 		cameraY += cameraStep;
 		break;
+		/*
 	case 'i':
 	case 'I':
 		lightZ -= lightStep;
@@ -503,7 +504,7 @@ e. The camera shoul
 	case 'L':
 		lightX += lightStep;
 		break;
-
+		*/
 	default:
 		break;
 	}

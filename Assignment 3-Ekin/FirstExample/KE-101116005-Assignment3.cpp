@@ -21,7 +21,7 @@ using namespace std;
 #include <SOIL.h>
 #include "GeometryGenerator.h"
 
-GLuint MatrixID;
+GLuint MatrixID, ViewID, ModelID;
 glm::mat4 MVP, View, Projection;
 /*
 GLuint cube_points_vbo, cube_colours_vbo, ;
@@ -52,6 +52,43 @@ float rotAngle = 0;
 GLint width, height;
 unsigned char* image;
 
+struct Light {
+	GLuint colorHandle;
+	GLuint posHandle;
+	GLuint strengthHandle;
+	GLuint falloffStartHandle;
+	GLuint falloffEndHandle;
+};
+
+Light   pointLights[2];
+
+void initLights() {
+	// first, get handles
+	pointLights[0].colorHandle = glGetUniformLocation(program, "pointLights[0].Color");
+	pointLights[0].posHandle = glGetUniformLocation(program, "pointLights[0].Position");
+	pointLights[0].strengthHandle = glGetUniformLocation(program, "pointLights[0].Strength");
+	pointLights[0].falloffStartHandle = glGetUniformLocation(program, "pointLights[0].falloffStart");
+	pointLights[0].falloffEndHandle = glGetUniformLocation(program, "pointLights[0].falloffEnd");
+
+	pointLights[1].colorHandle = glGetUniformLocation(program, "pointLights[1].Color");
+	pointLights[1].posHandle = glGetUniformLocation(program, "pointLights[1].Position");
+	pointLights[1].strengthHandle = glGetUniformLocation(program, "pointLights[1].Strength");
+	pointLights[1].falloffStartHandle = glGetUniformLocation(program, "pointLights[1].falloffStart");
+	pointLights[1].falloffEndHandle = glGetUniformLocation(program, "pointLights[1].falloffEnd");
+
+	// second, pass data
+	glUniform3fv(pointLights[0].colorHandle, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	glUniform3fv(pointLights[0].posHandle, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	glUniform1f(pointLights[0].strengthHandle, 1.0f);
+	glUniform1f(pointLights[0].falloffStartHandle, 1.0f);
+	glUniform1f(pointLights[0].falloffEndHandle, 50.0f);
+
+	glUniform3fv(pointLights[1].colorHandle, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	glUniform3fv(pointLights[1].posHandle, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	glUniform1f(pointLights[1].strengthHandle, 1.0f);
+	glUniform1f(pointLights[1].falloffStartHandle, 1.0f);
+	glUniform1f(pointLights[1].falloffEndHandle, 50.0f);
+}
 
 void MyKeyboardFunc(unsigned char Key, int x, int y)
 {
@@ -122,6 +159,8 @@ void init(void)
 	glUseProgram(program);	
 
 	MatrixID = glGetUniformLocation(program, "MVP");
+	ViewID = glGetUniformLocation(program, "V");
+	ModelID = glGetUniformLocation(program, "M");
 
 	Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 	View = glm::lookAt
@@ -148,6 +187,8 @@ void init(void)
 
 	PassTextureToGPU("bonusTexture.png", triPrism_tex);
 	gg.CreateTriPrism(&triPrismVAO);
+
+	initLights();
 }
 
 void transformObject(glm::vec3 scale, glm::vec3 rotationAxis, float rotationAngle, glm::vec3 translation) {
@@ -160,6 +201,9 @@ void transformObject(glm::vec3 scale, glm::vec3 rotationAxis, float rotationAngl
 	MVP = Projection * View * Model;
 	MatrixID = glGetUniformLocation(program, "MVP");
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(ViewID, 1, GL_FALSE, &View[0][0]);
+	glUniformMatrix4fv(ModelID, 1, GL_FALSE, &Model[0][0]);
+
 }
 
 void display(void)

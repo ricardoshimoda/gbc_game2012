@@ -1,12 +1,6 @@
 ﻿D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (FifthAssignment.vcxproj, FirstExample.vcxproj, ThirdAssignment.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  GeometryGenerator.cpp
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(84): warning C4305: 'initializing': truncation from 'double' to 'float'
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(246): warning C4305: 'initializing': truncation from 'double' to 'float'
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(583): warning C4305: 'initializing': truncation from 'double' to 'float'
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(760): warning C4305: 'initializing': truncation from 'double' to 'float'
   Project.cpp
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\project.cpp(252): warning C4305: 'initializing': truncation from 'double' to 'float'
-  Generating Code...
+d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\project.cpp(247): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
 Debug\LoadShaders.obj : warning LNK4042: object specified more than once; extras ignored
 LINK : warning LNK4098: defaultlib 'LIBCMTD' conflicts with use of other libs; use /NODEFAULTLIB:library
 SOIL.lib(image_DXT.obj) : warning LNK4099: PDB 'SOIL.pdb' was not found with 'SOIL.lib(image_DXT.obj)' or at 'D:\Projects\GBC\04\GAME2012\gbc_game2012\Project\Debug\SOIL.pdb'; linking object as if no debug info
