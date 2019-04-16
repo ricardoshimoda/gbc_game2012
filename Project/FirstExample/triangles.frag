@@ -9,7 +9,7 @@ out vec4 fColor;
 
 // Define the number of points of light
 #ifndef NUM_POINT_LIGHTS
-    #define NUM_POINT_LIGHTS 2
+    #define NUM_POINT_LIGHTS 3
 #endif
 
 struct Light{

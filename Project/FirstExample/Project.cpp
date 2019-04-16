@@ -71,11 +71,11 @@ unsigned char* image;
 /************ END TEXTURES ************/
 
 /************ CAMERA POSITION ************/
-glm::vec3 cameraPosition(-4.0f, 105.0f, 89.0f);
-float cameraStep = 0.1f;
-float cameraX = 85.0f, cameraY = 51.0f, cameraZ = 40.0f;
+glm::vec3 cameraPos(150.0f, 15.0f, 10.0f);
 float cameraSpeed = 1;
 float rotAngle = 0;
+glm::vec3 cameraFront = glm::vec3(-1.0f, 0.0f, 0.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 /************ END CAMERA POSITION AND LOOK AT ************/
 
 /************ CONSTANTS ************/
@@ -94,7 +94,7 @@ struct Light {
 	GLuint falloffStartHandle;
 	GLuint falloffEndHandle;
 };
-Light   pointLights[2];
+Light   pointLights[3];
 /************ END LIGHTING ************/
 
 void initLights() {
@@ -111,6 +111,12 @@ void initLights() {
 	pointLights[1].falloffStartHandle = glGetUniformLocation(program, "pointLights[1].falloffStart");
 	pointLights[1].falloffEndHandle = glGetUniformLocation(program, "pointLights[1].falloffEnd");
 
+	pointLights[2].colorHandle = glGetUniformLocation(program, "pointLights[1].Color");
+	pointLights[2].posHandle = glGetUniformLocation(program, "pointLights[1].Position");
+	pointLights[2].strengthHandle = glGetUniformLocation(program, "pointLights[1].Strength");
+	pointLights[2].falloffStartHandle = glGetUniformLocation(program, "pointLights[1].falloffStart");
+	pointLights[2].falloffEndHandle = glGetUniformLocation(program, "pointLights[1].falloffEnd");
+
 	// second, pass data
 	glUniform3fv(pointLights[0].colorHandle, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 	glUniform3fv(pointLights[0].posHandle, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
@@ -123,6 +129,12 @@ void initLights() {
 	glUniform1f(pointLights[1].strengthHandle, 1.0f);
 	glUniform1f(pointLights[1].falloffStartHandle, 1.0f);
 	glUniform1f(pointLights[1].falloffEndHandle, 50.0f);
+
+	glUniform3fv(pointLights[2].colorHandle, 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	glUniform3fv(pointLights[2].posHandle, 1, glm::value_ptr(glm::vec3(-1.0f, -1.0f, -1.0f)));
+	glUniform1f(pointLights[2].strengthHandle, 1.0f);
+	glUniform1f(pointLights[2].falloffStartHandle, 1.0f);
+	glUniform1f(pointLights[2].falloffEndHandle, 50.0f);
 }
 
 void MyKeyboardFunc(unsigned char Key, int x, int y)
@@ -130,29 +142,30 @@ void MyKeyboardFunc(unsigned char Key, int x, int y)
 	switch (Key)
 	{
 	case 'W':
-		cameraZ -= cameraSpeed;
+		cameraPos += cameraSpeed * cameraFront;
 		break;
 	case 'w':
-		cameraZ -= cameraSpeed;
+		cameraPos += cameraSpeed * cameraFront;
 		break;
 	case 'S':
-		cameraZ += cameraSpeed;
+		cameraPos -= cameraSpeed * cameraFront;
 		break;
 	case 's':
-		cameraZ += cameraSpeed;
+		cameraPos -= cameraSpeed * cameraFront;
 		break;
 	case 'A':
-		cameraX -= cameraSpeed;
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
 	case 'a':
-		cameraX -= cameraSpeed;
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
 	case 'D':
-		cameraX += cameraSpeed;
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
 	case 'd':
-		cameraX += cameraSpeed;
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
+		/*
 	case 'F':
 		cameraY -= cameraSpeed;
 		break;
@@ -164,7 +177,7 @@ void MyKeyboardFunc(unsigned char Key, int x, int y)
 		break;
 	case 'r':
 		cameraY += cameraSpeed;
-		break;
+		break;*/
 	};
 }
 
@@ -198,12 +211,14 @@ void init(void)
 	ModelID = glGetUniformLocation(program, "M");
 
 	Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 10000.0f);
-	View = glm::lookAt
-	(
-		glm::vec3(cameraX, cameraY, cameraZ), // position of the camera (positive Z-Axis is outwwards of the screen)
-		glm::vec3(0, 0, 0), // lookat position (what the camera is looking at)
-		glm::vec3(0, 1, 0)  // up vector of the camera (orientation/rotation of the camera)
-	);
+	View = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		
+//		glm::lookAt
+	//(
+		//cameraPos, // position of the camera (positive Z-Axis is outwwards of the screen)
+		//glm::vec3(0, 0, 0), // lookat position (what the camera is looking at)
+		//glm::vec3(0, 1, 0)  // up vector of the camera (orientation/rotation of the camera)
+	//);
 
 
 	PassTextureToGPU("black.jpg", blackTex);
@@ -256,12 +271,13 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.2, 0.2, 0.2, 0.2);
 
-	View = glm::lookAt
-	(
-		glm::vec3(cameraX, cameraY, cameraZ),	// position of the camera (positive Z-Axis is outwwards of the screen)
-		glm::vec3(0, 0, 0),						// lookat position (what the camera is looking at)
-		glm::vec3(0, 1, 0)						// up vector of the camera (orientation/rotation of the camera)
-	);
+	View = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp); 
+	//glm::lookAt
+	//(
+		//cameraPos,	// position of the camera (positive Z-Axis is outwwards of the screen)
+		//glm::vec3(0, 0, 0),						// lookat position (what the camera is looking at)
+		//glm::vec3(0, 1, 0)						// up vector of the camera (orientation/rotation of the camera)
+	//);
 
 	// LAKE
 	glBindVertexArray(cubeVAO);
@@ -485,9 +501,10 @@ int main(int argc, char** argv)
 	glutCreateWindow("Greasy Bacon - The Castle");
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//glFrontFace(GL_CW);
+	//ewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwglFrontFace(GL_CW);
 
 	glutKeyboardFunc(MyKeyboardFunc);
 
