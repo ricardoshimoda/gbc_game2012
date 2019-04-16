@@ -64,7 +64,7 @@ int cubeTriangles,
 /************ END VAOs AND DRAWING VARIABLES ************/
 
 /************ TEXTURES ************/
-GLuint wedge_tex, triPrism_tex, star_tex, pyramid_tex, cube_tex;
+GLuint wedge_tex, triPrism_tex, star_tex, pyramid_tex, cube_tex, hexagon_tex;
 
 GLint width, height;
 unsigned char* image;
@@ -223,6 +223,18 @@ void init(void)
 	PassTextureToGPU("bonusTexture.png", triPrism_tex);
 	triPrismTriangles = gg.CreateTriPrism(&triPrismVAO);
 
+	PassTextureToGPU("bonusTexture.png", cube_tex);
+	cubeTriangles = gg.CreateCube(&cubeVAO);
+
+	PassTextureToGPU("bonusTexture.png", pyramid_tex);
+	pyramidTriangles = gg.CreatePyramid(&pyramidVAO);
+
+	PassTextureToGPU("wicker.jpg", hexagon_tex);
+	hexagonTriangles = gg.CreateHexagon(&hexagonVAO);
+
+	simsIndicatorTriangles = gg.CreateSimsIndicator(&simsIndicatorVAO);
+
+
 	initLights();
 }
 
@@ -252,6 +264,11 @@ void display(void)
 		glm::vec3(0, 0, 0),						// lookat position (what the camera is looking at)
 		glm::vec3(0, 1, 0)						// up vector of the camera (orientation/rotation of the camera)
 	);
+	/*
+	glBindVertexArray(cubeVAO);
+	glBindTexture(GL_TEXTURE_2D, cube_tex);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(-4, 0, 0));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
 
 	glBindVertexArray(wedgeVAO);
 	glBindTexture(GL_TEXTURE_2D, wedge_tex);
@@ -267,6 +284,22 @@ void display(void)
 	glBindTexture(GL_TEXTURE_2D, star_tex);
 	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(2, 0, 0));
 	glDrawElements(GL_TRIANGLES, starTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(pyramidVAO);
+	glBindTexture(GL_TEXTURE_2D, pyramid_tex);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(4, 0, 0));
+	glDrawElements(GL_TRIANGLES, pyramidTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(hexagonVAO);
+	glBindTexture(GL_TEXTURE_2D, hexagon_tex);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 2, 0));
+	glDrawElements(GL_TRIANGLES, hexagonTriangles, GL_UNSIGNED_SHORT, 0);
+		*/
+
+	glBindVertexArray(simsIndicatorVAO);
+	glBindTexture(GL_TEXTURE_2D, hexagon_tex);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 2, 0));
+	glDrawElements(GL_TRIANGLES, hexagonTriangles, GL_UNSIGNED_SHORT, 0);
 
 	rotAngle += 0.75f;
 	glutSwapBuffers();

@@ -10,15 +10,19 @@
 #include "math.h"
 #include "GeometryGenerator.h"
 
+float GeometryGenerator::epsilonCorrector(float value) {
+	return (value < 3 * FLT_EPSILON && value > -3 * FLT_EPSILON) ? 0.0f : value;
+}
+
 void GeometryGenerator::crossProduct(float vect_A[], float vect_B[], float cross_P[])
 {
 	cross_P[0] = vect_A[1] * vect_B[2] - vect_A[2] * vect_B[1];
 	cross_P[1] = vect_A[0] * vect_B[2] - vect_A[2] * vect_B[0];
 	cross_P[2] = vect_A[0] * vect_B[1] - vect_A[1] * vect_B[0];
 	float length = sqrt(cross_P[0] * cross_P[0] + cross_P[1] * cross_P[1] + cross_P[2] * cross_P[2]);
-	cross_P[0] = cross_P[0] / length;
-	cross_P[1] = cross_P[1] / length;
-	cross_P[2] = cross_P[2] / length;
+	cross_P[0] = epsilonCorrector(cross_P[0] / length);
+	cross_P[1] = epsilonCorrector(cross_P[1] / length);
+	cross_P[2] = epsilonCorrector(cross_P[2] / length);
 }
 
 void GeometryGenerator::normalGenerator(float *vertices, GLushort *ibo, float *normals, int size) {
@@ -58,7 +62,7 @@ void GeometryGenerator::normalGenerator(float *vertices, GLushort *ibo, float *n
 		vertexIndex = left * 3;
 		normals[vertexIndex] = normal[0];
 		normals[vertexIndex + 1] = normal[1];
-		normals[vertexIndex + 1] = normal[2];
+		normals[vertexIndex + 2] = normal[2];
 
 		/* For Center */
 		A[0] = leftArray[0] - centerArray[0];
@@ -414,8 +418,8 @@ int GeometryGenerator::CreateStar(GLuint *starVAO)
 	// END OF STAR INDEX LIST IBO --------------------------------------------------
 
 	// STAR NORMALS VBO ---------------------------------------------------------
-	float *star_normals = new float[300];
-	normalGenerator(star_vertices, star_index_array, star_normals, sizeof(star_index_array) / sizeof(GLushort));
+	float *star_normals = new float[sizeof(star_vertices) / sizeof(float)];
+	normalGenerator(star_vertices, star_index_array, star_normals, sizeof(star_index_ibo) / sizeof(GLushort));
 	GLuint star_normal_vbo = 0;
 	glGenBuffers(1, &star_normal_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, star_normal_vbo);
@@ -424,7 +428,7 @@ int GeometryGenerator::CreateStar(GLuint *starVAO)
 	glEnableVertexAttribArray(3);
 	// END OF STAR NORMALS VBO ---------------------------------------------------------
 
-	return sizeof(star_index_array);
+	return sizeof(star_index_array) / sizeof(GLushort);
 }
 
 int GeometryGenerator::CreateWedge(GLuint *wedgeVAO)
@@ -523,7 +527,19 @@ int GeometryGenerator::CreateWedge(GLuint *wedgeVAO)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wedge_index_ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(wedge_index_array), wedge_index_array, GL_STATIC_DRAW);
 	// END OF WEDGE INDEX LIST IBO --------------------------------------------------
-	return sizeof(wedge_index_array);
+
+	// WEDGE NORMALS VBO ---------------------------------------------------------
+	float *wedge_normals = new float[sizeof(wedge_vertices) / sizeof(float)];
+	normalGenerator(wedge_vertices, wedge_index_array, wedge_normals, sizeof(wedge_index_array) / sizeof(GLushort));
+	GLuint wegde_normal_vbo = 0;
+	glGenBuffers(1, &wegde_normal_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, wegde_normal_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 300 * sizeof(float), wedge_normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
+	// END OF WEDGE NORMALS VBO ---------------------------------------------------------
+
+	return sizeof(wedge_index_array) / sizeof(GLushort);
 }
 
 int GeometryGenerator::CreateTriPrism(GLuint *triPrismVAO)
@@ -607,23 +623,766 @@ int GeometryGenerator::CreateTriPrism(GLuint *triPrismVAO)
 	// END OF TRIPRISM INDEX LIST IBO --------------------------------------------------
 
 	// TRIPRISM NORMALS VBO ---------------------------------------------------------
-	float *triPrism_normals = new float[12];
-	normalGenerator(triPrism_vertices, triPrism_index_array, triPrism_normals, 12);
+	float *triPrism_normals = new float[sizeof(triPrism_vertices) / sizeof(float)];
+	normalGenerator(triPrism_vertices, triPrism_index_array, triPrism_normals, sizeof(triPrism_index_array) / sizeof(GLushort));
 	GLuint triPrism_normal_vbo = 0;
 	glGenBuffers(1, &triPrism_normal_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, triPrism_normal_vbo);
 	glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(float), triPrism_normals, GL_STATIC_DRAW);
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(3);
-	// END OF STAR NORMALS VBO ---------------------------------------------------------
+	// END OF TRIPRISM NORMALS VBO ---------------------------------------------------------
 
-	return sizeof(triPrism_index_array);
+	return sizeof(triPrism_index_array) / sizeof(GLushort);
 }
 
-int GeometryGenerator::CreateCube(GLuint *cubeVAO) { return 0; }
-int GeometryGenerator::CreatePyramid(GLuint *pyramidVAO) { return 0; }
-int GeometryGenerator::CreateHexagon(GLuint *hexagonVAO) { return 0; }
-int GeometryGenerator::CreateSimsIndicator(GLuint *simsIndicatorVAO) { return 0; }
-int GeometryGenerator::CreateCylinder(GLuint *cylinderVAO) { return 0; }
+int GeometryGenerator::CreateCube(GLuint *cubeVAO) { 
+
+	glGenVertexArrays(1, cubeVAO);
+	glBindVertexArray(*cubeVAO);
+
+	// CUBE VERTICES VBO -----------------------------------------------------------
+	float halfCubeSide = 0.5;
+	float points[] = {
+		/*
+		 * This is the first set - from 0 to 7
+		 */
+		-halfCubeSide, -halfCubeSide,  halfCubeSide,	// 0,1                            
+		 halfCubeSide, -halfCubeSide,  halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide,  halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide,  halfCubeSide,	// 0,0
+		-halfCubeSide, -halfCubeSide, -halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide, -halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide, -halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide, -halfCubeSide,	// 0,0
+		/*
+		 * This is the second set - from 8 to 15
+		 */
+		-halfCubeSide, -halfCubeSide,  halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide,  halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide,  halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide,  halfCubeSide,	// 0,0
+		-halfCubeSide, -halfCubeSide, -halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide, -halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide, -halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide, -halfCubeSide,	// 0,0
+		/*
+		 * This is the third set - from 16 to 23
+		 */
+		-halfCubeSide, -halfCubeSide,  halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide,  halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide,  halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide,  halfCubeSide,	// 0,0
+		-halfCubeSide, -halfCubeSide, -halfCubeSide,	// 0,1
+		 halfCubeSide, -halfCubeSide, -halfCubeSide,	// 1,1
+		 halfCubeSide,  halfCubeSide, -halfCubeSide,	// 1,0
+		-halfCubeSide,  halfCubeSide, -halfCubeSide		// 0,0
+	};
+
+	GLuint points_vbo = 0;
+	glGenBuffers(1, &points_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	// END OF CUBE VERTICES VBO ----------------------------------------------------
+
+	// CUBE COLOURS VBO -------------------------------------------------------------
+	float colors[] = {
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f
+	};
+
+	GLuint colors_vbo = 0;
+	glGenBuffers(1, &colors_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+	// END OF CUBE COLOURS VBO -------------------------------------------------------------
+
+	// CUBE TEXTURES VBO -------------------------------------------------------------
+	float texMapCube[] = {
+		0.f,1.f, // Front_1
+		1.f,1.f, // Front_2
+		1.f,0.f, // Front_3
+		0.f,0.f, // Front_4
+
+		0.f,1.f, // Back_1 
+		1.f,1.f, // Back_2
+		1.f,0.f, // Back_3
+		0.f,0.f, // Back_4
+
+		0.f,1.f, // Bottom_1 
+		0.f,0.f, // Botton_4
+		1.f,1.f, // Top_2
+		0.f,1.f, // Top_1
+		1.f,1.f, // Bottom_2
+		1.f,0.f, // Bottom_3
+		1.f,0.f, // Top_3
+		0.f,0.f, // top_4
+
+		0.f,0.f, // Left_4
+		0.f,1.f, // Right_1
+		0.f,0.f, // Right_4
+		0.f,1.f, // Left_1
+		1.f,0.f, // Left_3
+		1.f,1.f, // Right_2
+		1.f,0.f, // Right_3
+		1.f,1.f  // Left_2
+	};
+
+	GLuint texture_vbo = 0;
+	glGenBuffers(1, &texture_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, texture_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texMapCube), texMapCube, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+	// END OF CUBE TEXTURES VBO ------------------------------------------------------
+
+	// CUBE INDEX LIST IBO ---------------------------------------------------------
+	GLushort cube_index_array[] = {
+		// front
+		0, 1, 2,
+		2, 3, 0,
+		// back
+		4, 7, 6,
+		6, 5, 4,
+		// top
+		11, 10, 14,
+		14, 15, 11,
+		// bottom
+		8, 12, 13,
+		13, 9, 8,
+		// right
+		17, 21, 22,
+		22, 18, 17,
+		// left
+		19, 23, 20,
+		20, 16, 19
+	};
+
+	GLuint cube_IBO;
+	glGenBuffers(1, &cube_IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_index_array), cube_index_array, GL_STATIC_DRAW);
+	// END OF CUBE INDEX LIST IBO --------------------------------------------------
+
+	// CUBE NORMALS VBO ---------------------------------------------------------
+	float *cube_normals = new float[sizeof(points) / sizeof(float)];
+	normalGenerator(points, cube_index_array, cube_normals, sizeof(cube_index_array) / sizeof(GLushort));
+	GLuint cube_normal_vbo = 0;
+	glGenBuffers(1, &cube_normal_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, cube_normal_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(float), cube_normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
+	// END OF CUBE NORMALS VBO ---------------------------------------------------------
+
+	return sizeof(cube_index_array) / sizeof(GLushort);
+}
+
+int GeometryGenerator::CreatePyramid(GLuint *pyramidVAO) {
+	glGenVertexArrays(1, pyramidVAO);
+	glBindVertexArray(*pyramidVAO);
+
+	// PYRAMID VERTICES VBO -----------------------------------------------------------
+	float halfPyramidSide = 0.5f;
+	float pyramidHeight = 1.0f;
+
+	float pyramidPoints[] = {
+		-halfPyramidSide, 0.0f,  halfPyramidSide, // 00-FRONT_1
+		 halfPyramidSide, 0.0f,  halfPyramidSide, // 01-FRONT_2
+		 halfPyramidSide, 0.0f, -halfPyramidSide, // 02-BACK_1
+		-halfPyramidSide, 0.0f, -halfPyramidSide, // 03-BACK_2
+		 0.0f, pyramidHeight, 0.0f,				  // 04-TOP_1
+		-halfPyramidSide, 0.0f,  halfPyramidSide, // 05-LEFT_2
+		 halfPyramidSide, 0.0f,  halfPyramidSide, // 06-RIGHT_1
+		 halfPyramidSide, 0.0f, -halfPyramidSide, // 07-RIGHT_2
+		-halfPyramidSide, 0.0f, -halfPyramidSide, // 08-LEFT_1
+		 0.0f, pyramidHeight, 0.0f,				  // 09-TOP_2
+		-halfPyramidSide, 0.0f,  halfPyramidSide, // 10-BOTTOM_1
+		 halfPyramidSide, 0.0f,  halfPyramidSide, // 11-BOTTOM_2
+		 halfPyramidSide, 0.0f, -halfPyramidSide, // 12-BOTTOM_3
+		-halfPyramidSide, 0.0f, -halfPyramidSide, // 13-BOTTOM_4
+		 0.0f, pyramidHeight, 0.0f,				  // 04-TOP_3
+		 0.0f, pyramidHeight, 0.0f				  // 04-TOP_4
+	};
+	/*
+	 Centering the pyramid
+	*/
+	for (int i = 0; i < sizeof(pyramidPoints) / sizeof(float); i++) {
+		if (i % 3 == 1) {
+			pyramidPoints[i] -= pyramidHeight/2;
+		}
+	}
+
+	GLuint pyramid_points_vbo = 0;
+	glGenBuffers(1, &pyramid_points_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, pyramid_points_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(pyramidPoints), pyramidPoints, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	// END OF PYRAMID VERTICES VBO ----------------------------------------------------
+
+	// PYRAMID COLOURS VBO -------------------------------------------------------------
+	float pyramid_colors[] = {
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f
+	};
+
+	GLuint pyramid_colors_vbo = 0;
+	glGenBuffers(1, &pyramid_colors_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, pyramid_colors_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(pyramid_colors), pyramid_colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+	// END OF PYRAMID COLOURS VBO -------------------------------------------------------------
+
+	// PYRAMID TEXTURES VBO -------------------------------------------------------------
+	float texMapPyramid[] = {
+		// Front and back
+		0.f, 1.f,	// 00
+		1.f, 1.f,	// 01
+		0.f, 1.f,	// 02
+		1.f, 1.f,	// 03
+		0.5f, 0.f, // 04 
+
+		1.f,1.f, // 05
+		0.f,1.f, // 06
+		1.f,1.f, // 07
+		0.f,1.f, // 08 
+		0.5f,0.f, // 09
+
+		0.f, 0.f, // 10
+		0.f,1.f, // 11
+		1.f,1.f, // 12
+		1.f,0.f, // 13
+		0.5f, 0.f, // 14
+		0.5f, 0.f // 15
+	};
+
+	GLuint pyramid_texture_vbo = 0;
+	glGenBuffers(1, &pyramid_texture_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, pyramid_texture_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texMapPyramid), texMapPyramid, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+	// END OF PYRAMID TEXTURES VBO ------------------------------------------------------
+
+	// PYRAMID INDEX LIST IBO ---------------------------------------------------------
+	GLushort pyramid_index_array[] = {
+		// front
+		0,1,4,
+		// back
+		2,3,14,
+		// left
+		8,5,9,
+		// right
+		6,7,15,
+		// bottom
+		10,13,12,
+		12,11,10
+	};
+
+	GLuint pyramid_IBO;
+	glGenBuffers(1, &pyramid_IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pyramid_IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(pyramid_index_array), pyramid_index_array, GL_STATIC_DRAW);
+	// END OF PYRAMID INDEX LIST IBO --------------------------------------------------
+
+	// PYRAMID NORMALS VBO ---------------------------------------------------------
+	float *pyramid_normals = new float[sizeof(pyramidPoints) / sizeof(float)];
+	normalGenerator(pyramidPoints, pyramid_index_array, pyramid_normals, sizeof(pyramid_index_array) / sizeof(GLushort));
+	GLuint pyramid_normal_vbo = 0;
+	glGenBuffers(1, &pyramid_normal_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, pyramid_normal_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(float), pyramid_normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
+	// END OF PYRAMID NORMALS VBO ---------------------------------------------------------
+
+	return sizeof(pyramid_index_array) / sizeof(GLushort);
+
+
+
+}
+
+int GeometryGenerator::CreateHexagon(GLuint *hexagonVAO) {
+
+	glGenVertexArrays(1, hexagonVAO);
+	glBindVertexArray(*hexagonVAO);
+
+	// HEXAGON VERTICES VBO -----------------------------------------------------------
+	float halfSideSize = 0.5f;
+	float sdDist = halfSideSize * sqrt(3)/2; // side * sin(60)
+
+	float points[] = {
+		// TOP_LID
+		-halfSideSize,			halfSideSize, halfSideSize,
+		 halfSideSize,			halfSideSize, halfSideSize,
+		 halfSideSize + sdDist,	halfSideSize, 0,
+		 halfSideSize,			halfSideSize, -halfSideSize,
+		-halfSideSize,			halfSideSize, -halfSideSize,
+		-halfSideSize - sdDist,	halfSideSize, 0,
+
+		 // BOTTOM_LID
+		-halfSideSize,		   -halfSideSize, halfSideSize,
+		 halfSideSize,		   -halfSideSize, halfSideSize,
+		 halfSideSize + sdDist,-halfSideSize, 0,
+		 halfSideSize,		   -halfSideSize, -halfSideSize,
+		-halfSideSize,		   -halfSideSize, -halfSideSize,
+		-halfSideSize - sdDist,-halfSideSize, 0,
+
+		// SIDES
+		-halfSideSize,			halfSideSize, halfSideSize,
+ 	    -halfSideSize,		   -halfSideSize, halfSideSize,
+		 halfSideSize,			halfSideSize, halfSideSize,
+ 		 halfSideSize,		   -halfSideSize, halfSideSize,
+		 halfSideSize + sdDist,	halfSideSize, 0,
+		 halfSideSize + sdDist,-halfSideSize, 0,
+		 halfSideSize,			halfSideSize, -halfSideSize,
+		 halfSideSize,		   -halfSideSize, -halfSideSize,
+		-halfSideSize,			halfSideSize, -halfSideSize,
+	    -halfSideSize,		   -halfSideSize, -halfSideSize,
+		-halfSideSize - sdDist,	halfSideSize, 0,
+	    -halfSideSize - sdDist,-halfSideSize, 0,
+
+	};
+
+	GLuint points_vbo = 0;
+	glGenBuffers(1, &points_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	// END OF HEXAGON VERTICES VBO ----------------------------------------------------
+
+	// HEXAGON COLOURS VBO -------------------------------------------------------------
+
+	float colors[] = {
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f
+	};
+
+	GLuint colors_vbo = 0;
+	glGenBuffers(1, &colors_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	// END OF HEXAGON COLOURS VBO ------------------------------------------------------
+
+	// HEXAGON TEXTURES VBO -------------------------------------------------------------
+	float texMapHexagon[] = {
+		/* TOP */
+		0,  1,
+		0,  0,
+		0,  1,
+		0.5,0.5,
+		0,  1,
+		0,  0,
+		/* BOTTOM  */
+		0,  1,
+		0,  0,
+		0,  1,
+		0.5,0.5,
+		0,  1,
+		0,  0,
+		/* SIDES */
+		0,  0,
+		0,  1,
+		1,  0,
+		1,  1,
+		0,  0,
+		0,  1,
+		1,  0,
+		1,  1,
+		0,  0,
+		0,  1,
+		1,  0,
+		1,  1
+	};
+
+	GLuint hexagon_texture_vbo = 0;
+	glGenBuffers(1, &hexagon_texture_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, hexagon_texture_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texMapHexagon), texMapHexagon, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+	// END OF HEXAGON TEXTURES VBO ------------------------------------------------------
+
+	// HEXAGON INDEX LIST IBO ---------------------------------------------------------
+
+	/*
+	* Faces have been defined counter-clockwise (just because I knid of prefer this way)
+	*/
+	GLushort penta_index_array[] = {
+		// top
+		0, 1, 3,
+		1, 2, 3,
+		0, 3, 5,
+		3, 4, 5,
+		//bottom
+		0, 3, 1,
+		1, 3, 2,
+		5, 3, 0,
+		5, 4, 3,
+		// sides
+		0, 1, 3,
+		3, 2, 0,
+		2, 3, 5,
+		5, 4, 2,
+		4, 5, 7,
+		7, 6, 4,
+		6, 7, 9,
+		9, 8, 6,
+		8, 9, 11,
+		11, 10, 8,
+		10, 11, 1,
+		1, 0, 10
+	};
+	for (int i = 4 * 3; i < 8 * 3; i++) {
+		penta_index_array[i] += 6;
+	}
+
+	for (int i = 8 * 3; i < sizeof(penta_index_array) / sizeof(GLushort); i++) {
+		penta_index_array[i] += 12;
+	}
+
+	GLuint penta_IBO;
+	glGenBuffers(1, &penta_IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, penta_IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(penta_index_array), penta_index_array, GL_STATIC_DRAW);
+
+	// END OF HEXAGON INDEX LIST IBO --------------------------------------------------
+
+	// HEXAGON NORMALS VBO ---------------------------------------------------------
+	float *hexagon_normals = new float[sizeof(points) / sizeof(float)];
+	normalGenerator(points, penta_index_array, hexagon_normals, sizeof(penta_index_array) / sizeof(GLushort));
+	GLuint hexagon_normal_vbo = 0;
+	glGenBuffers(1, &hexagon_normal_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, hexagon_normal_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(float), hexagon_normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
+
+	// END OF HEXAGON NORMALS VBO ---------------------------------------------------------
+
+	return sizeof(penta_index_array) / sizeof(GLushort);
+}
+
+int GeometryGenerator::CreateSimsIndicator(GLuint *simsIndicatorVAO) { 
+
+	glGenVertexArrays(1, simsIndicatorVAO);
+	glBindVertexArray(*simsIndicatorVAO);
+
+	// SIMS INDICATOR VERTICES VBO -----------------------------------------------------------
+	float halfSideSize = 0.5f;
+	float sdDist = halfSideSize * sqrt(3) / 2; // side * sin(60)
+
+	float points[] = {
+		// BASE AND TOP
+		 0,                     halfSideSize, 0,
+		-halfSideSize,			0,            halfSideSize,
+		 halfSideSize,			0,            halfSideSize,
+
+		 0,                     halfSideSize, 0,
+		 halfSideSize,			0,            halfSideSize,
+		 halfSideSize + sdDist,	0,            0,
+
+		 0,                     halfSideSize, 0,
+		 halfSideSize + sdDist,	0,            0,
+		 halfSideSize,			0,           -halfSideSize,
+
+		 0,                     halfSideSize, 0,
+		 halfSideSize,			0,           -halfSideSize,
+		-halfSideSize,			0,           -halfSideSize,
+
+		 0,                     halfSideSize, 0,
+		-halfSideSize,			0,           -halfSideSize,
+		-halfSideSize - sdDist,	0,            0,
+
+		 0,                     halfSideSize, 0,
+		-halfSideSize - sdDist,	0,            0,
+		-halfSideSize,			0,            halfSideSize,
+
+		// BASE AND DOWN
+		 0,                    -halfSideSize, 0,
+		 halfSideSize,			0,            halfSideSize,
+		-halfSideSize,			0,            halfSideSize,
+
+		 0,                    -halfSideSize, 0,
+		 halfSideSize + sdDist,	0,            0,
+		 halfSideSize,			0,            halfSideSize,
+
+		 0,                    -halfSideSize, 0,
+		 halfSideSize,			0,           -halfSideSize,
+		 halfSideSize + sdDist,	0,            0,
+
+		 0,                    -halfSideSize, 0,
+		-halfSideSize,			0,           -halfSideSize,
+		 halfSideSize,			0,           -halfSideSize,
+
+		 0,                    -halfSideSize, 0,
+		-halfSideSize - sdDist,	0,            0,
+		-halfSideSize,			0,           -halfSideSize,
+
+		 0,                    -halfSideSize, 0,
+		-halfSideSize,			0,            halfSideSize,
+		-halfSideSize - sdDist,	0,            0
+	};
+
+	GLuint points_vbo = 0;
+	glGenBuffers(1, &points_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	// END OF SIMS INDICATOR VERTICES VBO ----------------------------------------------------
+
+	// SIMS INDICATOR COLOURS VBO -------------------------------------------------------------
+
+	float *colors = new float[108];
+	for (int i = 0; i < 108; i++) {
+		if (i % 3 == 2) {
+			colors[i] = 1.0f;
+		}
+	}
+	GLuint colors_vbo = 0;
+	glGenBuffers(1, &colors_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 108, colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	// END OF SIMS INDICATOR COLOURS VBO ------------------------------------------------------
+
+	// SIMS INDICATOR TEXTURES VBO -------------------------------------------------------------
+	float *texMap = new float[36*2];
+	for (int i = 0; i < 36; i++) {
+		if (i % 3 == 0) {
+			texMap[2 * i] = 0.5;
+			texMap[2 * i + 1] = 0.5;
+		}
+		else if (i % 3 == 1) {
+			texMap[2 * i] = 1;
+			texMap[2 * i + 1] = 0;
+		}
+		else {
+			texMap[2 * i] = 1;
+			texMap[2 * i + 1] = 1;
+		}
+	}
+
+
+	GLuint sims_indicator_texture_vbo = 0;
+	glGenBuffers(1, &sims_indicator_texture_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, sims_indicator_texture_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texMap), texMap, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+	// END OF SIMS INDICATOR TEXTURES VBO ------------------------------------------------------
+
+	// SIMS INDICATOR INDEX LIST IBO ---------------------------------------------------------
+
+	GLushort index_array[] = {
+		0,  1,  2,
+		3,  4,  5,
+		6,  7,  8,
+		9,  10, 11,
+		12, 13, 14,
+		15, 16, 17,
+		18, 19, 20,
+		21, 22, 23,
+		24, 25, 26, 
+		27, 28, 29,
+		30, 31, 32,
+		33, 34, 35
+	};
+
+	GLuint sims_indicator_IBO;
+	glGenBuffers(1, &sims_indicator_IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sims_indicator_IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index_array), index_array, GL_STATIC_DRAW);
+
+	// END OF SIMS INDICATOR INDEX LIST IBO --------------------------------------------------
+
+	// SIMS INDICATOR NORMALS VBO ---------------------------------------------------------
+	float *normals = new float[sizeof(points) / sizeof(float)];
+	normalGenerator(points, index_array, normals, sizeof(index_array) / sizeof(GLushort));
+	GLuint sims_indicator_normal_vbo = 0;
+	glGenBuffers(1, &sims_indicator_normal_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, sims_indicator_normal_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(float), normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
+
+	// END OF HEXAGON NORMALS VBO ---------------------------------------------------------
+
+	return sizeof(index_array) / sizeof(GLushort);
+}
+
+int GeometryGenerator::CreateCylinder(GLuint *cylinderVAO) {
+
+	glGenVertexArrays(1, cylinderVAO);
+	glBindVertexArray(*cylinderVAO);
+
+	// SIMS INDICATOR VERTICES VBO -----------------------------------------------------------
+	float radius = 0.5f;
+	float degrees = 5;
+	float halfHeight = 0.5f;
+
+
+	float *points = new float[];
+
+	GLuint points_vbo = 0;
+	glGenBuffers(1, &points_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	// END OF SIMS INDICATOR VERTICES VBO ----------------------------------------------------
+
+	// SIMS INDICATOR COLOURS VBO -------------------------------------------------------------
+
+	float *colors = new float[108];
+	for (int i = 0; i < 108; i++) {
+		if (i % 3 == 2) {
+			colors[i] = 1.0f;
+		}
+	}
+	GLuint colors_vbo = 0;
+	glGenBuffers(1, &colors_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 108, colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	// END OF SIMS INDICATOR COLOURS VBO ------------------------------------------------------
+
+	// SIMS INDICATOR TEXTURES VBO -------------------------------------------------------------
+	float *texMap = new float[36 * 2];
+	for (int i = 0; i < 36; i++) {
+		if (i % 3 == 0) {
+			texMap[2 * i] = 0.5;
+			texMap[2 * i + 1] = 0.5;
+		}
+		else if (i % 3 == 1) {
+			texMap[2 * i] = 1;
+			texMap[2 * i + 1] = 0;
+		}
+		else {
+			texMap[2 * i] = 1;
+			texMap[2 * i + 1] = 1;
+		}
+	}
+
+
+	GLuint sims_indicator_texture_vbo = 0;
+	glGenBuffers(1, &sims_indicator_texture_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, sims_indicator_texture_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texMap), texMap, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+	// END OF SIMS INDICATOR TEXTURES VBO ------------------------------------------------------
+
+	// SIMS INDICATOR INDEX LIST IBO ---------------------------------------------------------
+
+	GLushort index_array[] = {
+		0,  1,  2,
+		3,  4,  5,
+		6,  7,  8,
+		9,  10, 11,
+		12, 13, 14,
+		15, 16, 17,
+		18, 19, 20,
+		21, 22, 23,
+		24, 25, 26,
+		27, 28, 29,
+		30, 31, 32,
+		33, 34, 35
+	};
+
+	GLuint sims_indicator_IBO;
+	glGenBuffers(1, &sims_indicator_IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sims_indicator_IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index_array), index_array, GL_STATIC_DRAW);
+
+	// END OF SIMS INDICATOR INDEX LIST IBO --------------------------------------------------
+
+	// SIMS INDICATOR NORMALS VBO ---------------------------------------------------------
+	float *normals = new float[sizeof(points) / sizeof(float)];
+	normalGenerator(points, index_array, normals, sizeof(index_array) / sizeof(GLushort));
+	GLuint sims_indicator_normal_vbo = 0;
+	glGenBuffers(1, &sims_indicator_normal_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, sims_indicator_normal_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(float), normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
+
+	// END OF HEXAGON NORMALS VBO ---------------------------------------------------------
+}
+
 int GeometryGenerator::CreateSphere(GLuint *sphereVAO) { return 0; }
 int GeometryGenerator::CreateCone(GLuint *coneVAO) { return 0; }

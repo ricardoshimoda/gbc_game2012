@@ -184,7 +184,6 @@ void init(void)
 	/*
 	 * This is the array for uv mapping - not a rubik, just unrolled stuff
 	 */
-	/*
 	float texMapCube[] = {
 		0.f,1.f, // Front_1
 		1.f,1.f, // Front_2
@@ -214,7 +213,6 @@ void init(void)
 		1.f,0.f, // Right_3
 		1.f,1.f  // Left_2
 	};
-	*/
 
 	float texMapCube[] = {
 		0.25f,1.f, // 00

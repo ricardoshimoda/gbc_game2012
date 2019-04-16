@@ -18,6 +18,7 @@ public:
 private:
 	void crossProduct(float vect_A[], float vect_B[], float cross_P[]);
 	void normalGenerator(float *vertices, GLushort *ibo, float *normals, int size);
+	float epsilonCorrector(float value);
 };
 
 #endif // GAME_HPP
