@@ -1,27 +1,4 @@
 ﻿D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (FifthAssignment.vcxproj, FirstExample.vcxproj, ThirdAssignment.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  GeometryGenerator.cpp
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(216): warning C4305: 'initializing': truncation from 'double' to 'float'
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(566): warning C4305: 'initializing': truncation from 'double' to 'float'
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(957): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1144): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1307): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1308): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1309): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1310): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1448): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1449): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1450): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1451): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1569): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1570): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1571): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1572): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1573): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1574): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1576): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1577): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1578): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1579): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1580): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\geometrygenerator.cpp(1581): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Project.cpp
+d:\projects\gbc\04\game2012\gbc_game2012\project\firstexample\project.cpp(257): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
   FirstExample.vcxproj -> D:\Projects\GBC\04\GAME2012\gbc_game2012\Project\Debug\Project.exe

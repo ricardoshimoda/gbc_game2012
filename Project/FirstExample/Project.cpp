@@ -64,16 +64,16 @@ int cubeTriangles,
 /************ END VAOs AND DRAWING VARIABLES ************/
 
 /************ TEXTURES ************/
-GLuint wedge_tex, triPrism_tex, star_tex, pyramid_tex, cube_tex, hexagon_tex;
+GLuint blackTex, bushTex, darkerGreyTex, darkGreyTex, greyTex, goldTex, grassTex, treeTex, waterTex, woodTex, redTex;
 
 GLint width, height;
 unsigned char* image;
 /************ END TEXTURES ************/
 
 /************ CAMERA POSITION ************/
-glm::vec3 cameraPosition(0.0f, 5.0f, 10.0f);
+glm::vec3 cameraPosition(-4.0f, 105.0f, 89.0f);
 float cameraStep = 0.1f;
-float cameraX = 0, cameraY = 1, cameraZ = 8;
+float cameraX = 85.0f, cameraY = 51.0f, cameraZ = 40.0f;
 float cameraSpeed = 1;
 float rotAngle = 0;
 /************ END CAMERA POSITION AND LOOK AT ************/
@@ -197,7 +197,7 @@ void init(void)
 	ViewID = glGetUniformLocation(program, "V");
 	ModelID = glGetUniformLocation(program, "M");
 
-	Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+	Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 10000.0f);
 	View = glm::lookAt
 	(
 		glm::vec3(cameraX, cameraY, cameraZ), // position of the camera (positive Z-Axis is outwwards of the screen)
@@ -205,48 +205,42 @@ void init(void)
 		glm::vec3(0, 1, 0)  // up vector of the camera (orientation/rotation of the camera)
 	);
 
+
+	PassTextureToGPU("black.jpg", blackTex);
+	PassTextureToGPU("red.jpg", redTex);
+	PassTextureToGPU("Bush.png", bushTex);
+	PassTextureToGPU("DarkerGrey.jpg", darkerGreyTex);
+	PassTextureToGPU("DarkGrey.jpg", darkGreyTex);
+	PassTextureToGPU("Gold.jpg", goldTex);
+	PassTextureToGPU("Grass.jpg", grassTex);
+	PassTextureToGPU("Grey.jpg", greyTex);
+	PassTextureToGPU("Tree.jpg", treeTex);
+	PassTextureToGPU("Water.jpg", waterTex);
+	PassTextureToGPU("Wood.png", woodTex);
+
 	GeometryGenerator gg;
-	/*
-	PassTextureToGPU("rubiksTexture.png", cube_tex);
-	gg.CreateRubiksCube(1.3, &rubiksVAO);
-
-	PassTextureToGPU("bonusTexture.png", pyramid_tex);
-	gg.CreatePyramid(&pyramidVAO);
-	*/
-
-	PassTextureToGPU("bonusTexture.png", star_tex);
 	starTriangles = gg.CreateStar(&starVAO);
-
-	PassTextureToGPU("bonusTexture.png", wedge_tex);
-	wedgeTriangles = gg.CreateWedge(&wedgeVAO);
-
-	PassTextureToGPU("bonusTexture.png", triPrism_tex);
-	triPrismTriangles = gg.CreateTriPrism(&triPrismVAO);
-
-	PassTextureToGPU("bonusTexture.png", cube_tex);
 	cubeTriangles = gg.CreateCube(&cubeVAO);
-
-	PassTextureToGPU("bonusTexture.png", pyramid_tex);
+	simsIndicatorTriangles = gg.CreateSimsIndicator(&simsIndicatorVAO);
+	cylinderTriangles = gg.CreateCylinder(&cylinderVAO);
+	coneTriangles = gg.CreateCone(&coneVAO);
+	sphereTriangles = gg.CreateSphere(&sphereVAO);
 	pyramidTriangles = gg.CreatePyramid(&pyramidVAO);
 
-	PassTextureToGPU("wicker.jpg", hexagon_tex);
+	wedgeTriangles = gg.CreateWedge(&wedgeVAO);
+	triPrismTriangles = gg.CreateTriPrism(&triPrismVAO);
 	hexagonTriangles = gg.CreateHexagon(&hexagonVAO);
 
-	simsIndicatorTriangles = gg.CreateSimsIndicator(&simsIndicatorVAO);
-
-	cylinderTriangles = gg.CreateCylinder(&cylinderVAO);
-
-	coneTriangles = gg.CreateCone(&coneVAO);
-
-	sphereTriangles = gg.CreateSphere(&sphereVAO);
 	initLights();
 }
 
-void transformObject(glm::vec3 scale, glm::vec3 rotationAxis, float rotationAngle, glm::vec3 translation) {
+void transformObject(glm::vec3 scale, glm::vec3 rotationAngle, glm::vec3 translation) {
 	glm::mat4 Model;
 	Model = glm::mat4(1.0f);
 	Model = glm::translate(Model, translation);
-	Model = glm::rotate(Model, glm::radians(rotationAngle), rotationAxis);
+	Model = glm::rotate(Model, glm::radians(rotationAngle.x), X_AXIS);
+	Model = glm::rotate(Model, glm::radians(rotationAngle.y), Y_AXIS);
+	Model = glm::rotate(Model, glm::radians(rotationAngle.z), Z_AXIS);
 	Model = glm::scale(Model, scale);
 
 	MVP = Projection * View * Model;
@@ -268,11 +262,163 @@ void display(void)
 		glm::vec3(0, 0, 0),						// lookat position (what the camera is looking at)
 		glm::vec3(0, 1, 0)						// up vector of the camera (orientation/rotation of the camera)
 	);
-	/*
+
+	// LAKE
 	glBindVertexArray(cubeVAO);
-	glBindTexture(GL_TEXTURE_2D, cube_tex);
-	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(-4, 0, 0));
+	glBindTexture(GL_TEXTURE_2D, waterTex);
+	transformObject(glm::vec3(75, 9.26, 75), glm::vec3(0, 0, 0), glm::vec3(0, -8.4, 0));
 	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+
+	// GRASS
+	glBindTexture(GL_TEXTURE_2D, grassTex);
+	transformObject(glm::vec3(50, 9.26, 50), glm::vec3(0, 0, 0), glm::vec3(0, -4.53, 0));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(150, 9.26, 50), glm::vec3(0, 0, 0), glm::vec3(0, -4.53, 60.3));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(150, 9.26, 50), glm::vec3(0, 0, 0), glm::vec3(0, -4.53, -59.2));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(38.52, 9.26, 100), glm::vec3(0, 0, 0), glm::vec3(55.74, -4.53, 0));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(38.52, 9.26, 100), glm::vec3(0, 0, 0), glm::vec3(-55.56, -4.53, 0));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+
+	// Bridge
+	glBindTexture(GL_TEXTURE_2D, woodTex);
+	transformObject(glm::vec3(19.05, 1, 8.33), glm::vec3(0, 0, 0), glm::vec3(30.24, 0.39, 0));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+
+	// Walls
+	glBindTexture(GL_TEXTURE_2D, greyTex);
+	transformObject(glm::vec3(27.86, 1.76, 44.744), glm::vec3(0, 180, 90), glm::vec3(-22.27, 2, 0.144));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(27.86, 1.76, 44.744), glm::vec3(0, 0, 90), glm::vec3(20.74, 2, 0.144));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(27.86, 1.76, 44.744), glm::vec3(0, 90, 90), glm::vec3(-0.72, 2, -21.68));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(27.86, 1.76, 44.744), glm::vec3(0, 270, 90), glm::vec3(-0.72, 2, 21.49));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+
+	// Central Cube
+	transformObject(glm::vec3(23, 15, 23), glm::vec3(0, 180, 90), glm::vec3(0, 4.4, 0));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+
+	// Portal
+	glBindTexture(GL_TEXTURE_2D, blackTex);
+	transformObject(glm::vec3(19.05, 1.95, 8.32), glm::vec3(0, 0, 0), glm::vec3(20.76, -2.4, 0));
+	glDrawElements(GL_TRIANGLES, cubeTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(cylinderVAO);
+	transformObject(glm::vec3(8.38, 0.96, 8.38), glm::vec3(0, 0, 90), glm::vec3(20.76, 7.02, 0.011));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+
+	// Towers
+	glBindTexture(GL_TEXTURE_2D, darkGreyTex);
+	transformObject(glm::vec3(4, 40, 4), glm::vec3(0, 0, 0), glm::vec3(20.8, 2.73, -21.5));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(4, 40, 4), glm::vec3(0, 0, 0), glm::vec3(-22.21, 2.73, -21.5));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(4, 40, 4), glm::vec3(0, 0, 0), glm::vec3(20.8, 2.73, 21.67));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(4, 40, 4), glm::vec3(0, 0, 0), glm::vec3(-20.19, 2.73, 21.67));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindTexture(GL_TEXTURE_2D, darkerGreyTex);
+	transformObject(glm::vec3(5, 0.3, 5), glm::vec3(0, 0, 0), glm::vec3(20.8, 22.83, -21.5));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(5, 0.3, 5), glm::vec3(0, 0, 0), glm::vec3(-22.21, 22.83, -21.5));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(5, 0.3, 5), glm::vec3(0, 0, 0), glm::vec3(20.8, 22.83, 21.67));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(5, 0.3, 5), glm::vec3(0, 0, 0), glm::vec3(-20.19, 22.83, 21.67));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindTexture(GL_TEXTURE_2D, woodTex);
+	transformObject(glm::vec3(1, 10, 1), glm::vec3(0, 0, 0), glm::vec3(45, 2, -20));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(1, 10, 1), glm::vec3(0, 0, 0), glm::vec3(45, 2, -10));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(1, 10, 1), glm::vec3(0, 0, 0), glm::vec3(45, 2, 0));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(1, 10, 1), glm::vec3(0, 0, 0), glm::vec3(45, 2, 10));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(1, 10, 1), glm::vec3(0, 0, 0), glm::vec3(45, 2, 20));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(coneVAO);
+	glBindTexture(GL_TEXTURE_2D, bushTex);
+	transformObject(glm::vec3(5, 10, 5), glm::vec3(0, 0, 0), glm::vec3(45, 10, -20));
+	glDrawElements(GL_TRIANGLES, coneTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(5, 10, 5), glm::vec3(0, 0, 0), glm::vec3(45, 10, -10));
+	glDrawElements(GL_TRIANGLES, coneTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(5, 10, 5), glm::vec3(0, 0, 0), glm::vec3(45, 10, 0));
+	glDrawElements(GL_TRIANGLES, coneTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(5, 10, 5), glm::vec3(0, 0, 0), glm::vec3(45, 10, 10));
+	glDrawElements(GL_TRIANGLES, coneTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(5, 10, 5), glm::vec3(0, 0, 0), glm::vec3(45, 10, 20));
+	glDrawElements(GL_TRIANGLES, coneTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(sphereVAO);
+	glBindTexture(GL_TEXTURE_2D, darkGreyTex);
+	transformObject(glm::vec3(15, 15, 15), glm::vec3(0, 0, 0), glm::vec3(0, 11.91, 0));
+	glDrawElements(GL_TRIANGLES, sphereTriangles, GL_UNSIGNED_SHORT, 0);
+
+
+	glBindVertexArray(simsIndicatorVAO);
+	glBindTexture(GL_TEXTURE_2D, goldTex);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(90, 0, 0), glm::vec3(21.55, 5.9, -11));
+	glDrawElements(GL_TRIANGLES, simsIndicatorTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(90, 0, 0), glm::vec3(21.55, 5.9, 11));
+	glDrawElements(GL_TRIANGLES, simsIndicatorTriangles, GL_UNSIGNED_SHORT, 0);
+
+
+	glBindVertexArray(starVAO);
+	glBindTexture(GL_TEXTURE_2D, goldTex);
+	transformObject(glm::vec3(15, 15, 1), glm::vec3(0, 90, 0), glm::vec3(21.55, 5.9, 0));
+	glDrawElements(GL_TRIANGLES, starTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(pyramidVAO);
+	transformObject(glm::vec3(3, 5, 3), glm::vec3(0, 0, 0), glm::vec3(20.8, 24.83, -21.5));
+	glDrawElements(GL_TRIANGLES, pyramidTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(3, 5, 3), glm::vec3(0, 0, 0), glm::vec3(-22.21, 24.83, -21.5));
+	glDrawElements(GL_TRIANGLES, pyramidTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(3, 5, 3), glm::vec3(0, 0, 0), glm::vec3(20.8, 24.83, 21.67));
+	glDrawElements(GL_TRIANGLES, pyramidTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(3, 5, 3), glm::vec3(0, 0, 0), glm::vec3(-20.19, 24.83, 21.67));
+	glDrawElements(GL_TRIANGLES, pyramidTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(hexagonVAO);
+	transformObject(glm::vec3(50, 5, 50), glm::vec3(0, 0, 0), glm::vec3(0, 40, 0));
+	glDrawElements(GL_TRIANGLES, hexagonTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(wedgeVAO);
+	glBindTexture(GL_TEXTURE_2D, redTex);
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(39.35, 0.26, 5.51));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(41.35, 0.26, 5.51));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(43.35, 0.26, 5.51));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(45.35, 0.26, 5.51));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(47.35, 0.26, 5.51));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(39.35, 0.26, -2.58));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(41.35, 0.26, -2.58));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(43.35, 0.26, -2.58));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(45.35, 0.26, -2.58));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+	transformObject(glm::vec3(2, 2, 2), glm::vec3(0, 90, 0), glm::vec3(47.35, 0.26, -2.58));
+	glDrawElements(GL_TRIANGLES, wedgeTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(triPrismVAO);
+	transformObject(glm::vec3(5, 5, 5), glm::vec3(0, 0, 0), glm::vec3(0, 20, 0));
+	glDrawElements(GL_TRIANGLES, triPrismTriangles, GL_UNSIGNED_SHORT, 0);
+
+	/*
 
 	glBindVertexArray(wedgeVAO);
 	glBindTexture(GL_TEXTURE_2D, wedge_tex);
@@ -314,12 +460,12 @@ void display(void)
 	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 0, 0));
 	glDrawElements(GL_TRIANGLES, coneTriangles, GL_UNSIGNED_SHORT, 0);
 
-	*/
-
 	glBindVertexArray(sphereVAO);
 	glBindTexture(GL_TEXTURE_2D, hexagon_tex);
-	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 0, 0));
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, rotAngle, 0), glm::vec3(0, 0, 0));
 	glDrawElements(GL_TRIANGLES, sphereTriangles, GL_UNSIGNED_SHORT, 0);
+	*/
+
 
 	rotAngle += 0.75f;
 	glutSwapBuffers();

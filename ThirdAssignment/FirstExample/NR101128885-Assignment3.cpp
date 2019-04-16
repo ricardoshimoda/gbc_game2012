@@ -184,6 +184,7 @@ void init(void)
 	/*
 	 * This is the array for uv mapping - not a rubik, just unrolled stuff
 	 */
+	 /*
 	float texMapCube[] = {
 		0.f,1.f, // Front_1
 		1.f,1.f, // Front_2
@@ -213,7 +214,7 @@ void init(void)
 		1.f,0.f, // Right_3
 		1.f,1.f  // Left_2
 	};
-
+	*/
 	float texMapCube[] = {
 		0.25f,1.f, // 00
 		0.5f,1.f, // 01
@@ -391,7 +392,7 @@ void init(void)
 	 * Reads the information of textures
 	 */
 	GLint widthRubik, heightRubik, widthBonus, heightBonus;
-	unsigned char* imageRubik = SOIL_load_image("rubiksTexture.png", &widthRubik, &heightRubik, 0, SOIL_LOAD_RGB);
+	unsigned char* imageRubik = SOIL_load_image("black.png", &widthRubik, &heightRubik, 0, SOIL_LOAD_RGB);
 	unsigned char* imageBonus = SOIL_load_image("bonusTexture.png", &widthBonus, &heightBonus, 0, SOIL_LOAD_RGB);
 
 	// Setup rubik's texture
