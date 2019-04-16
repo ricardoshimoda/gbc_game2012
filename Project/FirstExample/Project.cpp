@@ -234,7 +234,11 @@ void init(void)
 
 	simsIndicatorTriangles = gg.CreateSimsIndicator(&simsIndicatorVAO);
 
+	cylinderTriangles = gg.CreateCylinder(&cylinderVAO);
 
+	coneTriangles = gg.CreateCone(&coneVAO);
+
+	sphereTriangles = gg.CreateSphere(&sphereVAO);
 	initLights();
 }
 
@@ -294,12 +298,28 @@ void display(void)
 	glBindTexture(GL_TEXTURE_2D, hexagon_tex);
 	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 2, 0));
 	glDrawElements(GL_TRIANGLES, hexagonTriangles, GL_UNSIGNED_SHORT, 0);
-		*/
 
 	glBindVertexArray(simsIndicatorVAO);
 	glBindTexture(GL_TEXTURE_2D, hexagon_tex);
 	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 2, 0));
 	glDrawElements(GL_TRIANGLES, hexagonTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(cylinderVAO);
+	glBindTexture(GL_TEXTURE_2D, hexagon_tex);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 0, 0));
+	glDrawElements(GL_TRIANGLES, cylinderTriangles, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(coneVAO);
+	glBindTexture(GL_TEXTURE_2D, hexagon_tex);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 0, 0));
+	glDrawElements(GL_TRIANGLES, coneTriangles, GL_UNSIGNED_SHORT, 0);
+
+	*/
+
+	glBindVertexArray(sphereVAO);
+	glBindTexture(GL_TEXTURE_2D, hexagon_tex);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 0, 0));
+	glDrawElements(GL_TRIANGLES, sphereTriangles, GL_UNSIGNED_SHORT, 0);
 
 	rotAngle += 0.75f;
 	glutSwapBuffers();
@@ -316,7 +336,7 @@ int main(int argc, char** argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);
-	glutCreateWindow("Karayalcin Ekin 101116005");
+	glutCreateWindow("Greasy Bacon - The Castle");
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);

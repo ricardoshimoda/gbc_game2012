@@ -80,8 +80,8 @@ vec3 calcPointLights(){
 }
 void main()
 {
-    vec3 ambient = vec3(1.2,1.2,1.2);
-	fColor = vec4(texture(texture0, texCoord).rgb,1.0);
-    //fColor = vec4((ambient+calcPointLights()) * texture(texture0, texCoord).rgb,1.0);
+    vec3 ambient = vec3(0.2,0.2,0.2);
+	//fColor = vec4(texture(texture0, texCoord).rgb,1.0);
+    fColor = vec4((ambient+calcPointLights()) * texture(texture0, texCoord).rgb,1.0);
 
 }

@@ -10,6 +10,8 @@
 #include "math.h"
 #include "GeometryGenerator.h"
 
+#define PI 3.14159265
+
 
 int GeometryGenerator::CreateStar(GLuint *starVAO)
 {
@@ -541,4 +543,149 @@ int GeometryGenerator::CreateTriPrism(GLuint *triPrismVAO)
 	// END OF STAR NORMALS VBO ---------------------------------------------------------
 
 	return sizeof(triPrism_index_array);
+}
+
+int GeometryGenerator::CreateCylinder(GLuint *cylinderVAO) {
+
+	glGenVertexArrays(1, cylinderVAO);
+	glBindVertexArray(*cylinderVAO);
+
+	// CYLINDER VERTICES VBO -----------------------------------------------------------
+	float radius = 0.5f;
+	int degrees = 120;
+	float halfHeight = 2.0f;
+
+	int baseTriangles = 360 / degrees;
+	int triangles = baseTriangles * 2 * 2;
+	int vertices = triangles * 3;
+	int coordinates = vertices * 3;
+	float *points = new float[coordinates];
+	float *p = points;
+
+	for (int currentAngle = 0; currentAngle < 360; currentAngle += degrees) {
+
+		float x1 = radius * cos(currentAngle * PI / 180);
+		float x2 = radius * cos((currentAngle + degrees) * PI / 180);
+		float z1 = radius * sin(currentAngle * PI / 180);
+		float z2 = radius * sin((currentAngle + degrees) * PI / 180);
+
+		/* TOP Origin */
+		*p = 0.0f; p++; *p = halfHeight; p++; *p = 0.0f; p++;
+		/* A */
+		*p = x1; p++; *p = halfHeight; p++; *p = z1; p++;
+		/* B */
+		*p = x2; p++; *p = halfHeight; p++; *p = z2; p++;
+
+		/* DOWN Origin */
+		*p = 0.0f; p++; *p = -halfHeight; p++; *p = 0.0f; p++;
+		/* A */
+		*p = x2; p++; *p = -halfHeight; p++; *p = z2; p++;
+		/* B */
+		*p = x1; p++; *p = -halfHeight; p++; *p = z1; p++;
+
+		/* SIDE 1 */
+		/* A */
+		*p = x2; p++; *p = halfHeight; p++; *p = z2; p++;
+		/* B */
+		*p = x1; p++; *p = halfHeight; p++; *p = z1; p++;
+		/* C */
+		*p = x1; p++; *p = -halfHeight; p++; *p = z1; p++;
+
+		/* SIDE 2 */
+		/* C */
+		*p = x1; p++; *p = -halfHeight; p++; *p = z1; p++;
+		/* D */
+		*p = x2; p++; *p = -halfHeight; p++; *p = z2; p++;
+		/* A */
+		*p = x2; p++; *p = halfHeight; p++; *p = z2; p++;
+
+	}
+
+	for (int i = 0; i < coordinates; i+=3) {
+		std::cout << "Coordinates x:" << points[i] << " y: " << points[i + 1] << " z: " << points[i + 2] << std::endl;
+	}
+
+	GLuint points_vbo = 0;
+	glGenBuffers(1, &points_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
+	glBufferData(GL_ARRAY_BUFFER, coordinates * sizeof(float), points, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	// END OF CYLINDER VERTICES VBO ----------------------------------------------------
+
+	// CYLINDER COLOURS VBO -------------------------------------------------------------
+
+	float *colors = new float[coordinates];
+	for (int i = 0; i < coordinates; i++) {
+		if (i % 3 == 2) {
+			colors[i] = 1.0f;
+		}
+	}
+	GLuint colors_vbo = 0;
+	glGenBuffers(1, &colors_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
+	glBufferData(GL_ARRAY_BUFFER, coordinates, colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	// END OF CYLINDER COLOURS VBO ------------------------------------------------------
+
+	// CYLINDER TEXTURES VBO -------------------------------------------------------------
+	float *texMap = new float[triangles * 3 * 2];
+	float *tm = texMap;
+	for (int i = 0; i < baseTriangles; i++) {
+		/* Base TOP */
+		*tm = 0.5f; tm++; *tm = 0.5f; tm++;
+		*tm = 1.0f; tm++; *tm = 0.0f; tm++;
+		*tm = 1.0f; tm++; *tm = 1.0f; tm++;
+		/* Base DOWN */
+		*tm = 0.5f; tm++; *tm = 0.5f; tm++;
+		*tm = 1.0f; tm++; *tm = 1.0f; tm++;
+		*tm = 1.0f; tm++; *tm = 0.0f; tm++;
+		/* Side ONE */
+		*tm = 0.0f; tm++; *tm = 0.0f; tm++;
+		*tm = 0.0f; tm++; *tm = 1.0f; tm++;
+		*tm = 1.0f; tm++; *tm = 1.0f; tm++;
+		/* Side TWO */
+		*tm = 1.0f; tm++; *tm = 1.0f; tm++;
+		*tm = 1.0f; tm++; *tm = 0.0f; tm++;
+		*tm = 0.0f; tm++; *tm = 0.0f; tm++;
+	}
+
+
+	GLuint texture_vbo = 0;
+	glGenBuffers(1, &texture_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, texture_vbo);
+	glBufferData(GL_ARRAY_BUFFER, triangles * 3 * 2, texMap, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+	// END OF CYLINDER TEXTURES VBO ------------------------------------------------------
+
+	// CYLINDER INDEX LIST IBO ---------------------------------------------------------
+
+	GLushort *index_array = new GLushort[vertices];
+	for (int i = 0; i < vertices; i++) {
+		index_array[i] = i;
+	}
+
+	GLuint cylinder_IBO;
+	glGenBuffers(1, &cylinder_IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cylinder_IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertices, index_array, GL_STATIC_DRAW);
+
+	// END OF CYLINDER INDEX LIST IBO --------------------------------------------------
+
+	// CYLINDER NORMALS VBO ---------------------------------------------------------
+	float *normals = new float[coordinates];
+	normalGenerator(points, index_array, normals, vertices);
+	GLuint normal_vbo = 0;
+	glGenBuffers(1, &normal_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, normal_vbo);
+	glBufferData(GL_ARRAY_BUFFER, coordinates, normals, GL_STATIC_DRAW);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
+
+	// END OF CYLINDER VBO ---------------------------------------------------------
+
+	return vertices;
 }

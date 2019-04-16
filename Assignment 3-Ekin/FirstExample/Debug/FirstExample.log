@@ -1,3 +1,8 @@
-﻿  KE-101116005-Assignment3.cpp
-d:\projects\gbc\04\game2012\gbc_game2012\assignment 3-ekin\firstexample\ke-101116005-assignment3.cpp(212): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+﻿  GeometryGenerator.cpp
+d:\projects\gbc\04\game2012\gbc_game2012\assignment 3-ekin\firstexample\geometrygenerator.cpp(135): warning C4305: 'initializing': truncation from 'double' to 'float'
+d:\projects\gbc\04\game2012\gbc_game2012\assignment 3-ekin\firstexample\geometrygenerator.cpp(473): warning C4305: 'initializing': truncation from 'double' to 'float'
+d:\projects\gbc\04\game2012\gbc_game2012\assignment 3-ekin\firstexample\geometrygenerator.cpp(567): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\projects\gbc\04\game2012\gbc_game2012\assignment 3-ekin\firstexample\geometrygenerator.cpp(568): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\projects\gbc\04\game2012\gbc_game2012\assignment 3-ekin\firstexample\geometrygenerator.cpp(569): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\projects\gbc\04\game2012\gbc_game2012\assignment 3-ekin\firstexample\geometrygenerator.cpp(570): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   FirstExample.vcxproj -> D:\Projects\GBC\04\GAME2012\gbc_game2012\Assignment 3-Ekin\Debug\FirstExample.exe

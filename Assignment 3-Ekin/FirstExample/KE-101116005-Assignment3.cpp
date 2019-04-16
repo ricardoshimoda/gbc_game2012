@@ -20,6 +20,7 @@ using namespace std;
 #include "math.h"
 #include <SOIL.h>
 #include "GeometryGenerator.h"
+#define PI 3.14159265
 
 GLuint MatrixID, ViewID, ModelID;
 glm::mat4 MVP, View, Projection;
@@ -37,13 +38,13 @@ GLuint program;
 /*
 All the VAOs
 */
-GLuint cubeVAO, pyramidVAO, rubiksVAO, starVAO, wedgeVAO, triPrismVAO;
+GLuint cubeVAO, pyramidVAO, rubiksVAO, starVAO, wedgeVAO, triPrismVAO, cylinderVAO;
 
 /*
 All the textures
 */
 GLuint wedge_tex, triPrism_tex, star_tex, pyramid_tex, cube_tex;
-int starIndexSize;
+int starIndexSize, cylinderIndexSize;
 
 float cameraX = 0, cameraY = 1, cameraZ = 8;
 float cameraSpeed = 1;
@@ -188,6 +189,9 @@ void init(void)
 	PassTextureToGPU("bonusTexture.png", triPrism_tex);
 	gg.CreateTriPrism(&triPrismVAO);
 
+
+	cylinderIndexSize = gg.CreateCylinder(&cylinderVAO);
+
 	initLights();
 }
 
@@ -217,7 +221,7 @@ void display(void)
 		glm::vec3(0, 0, 0),						// lookat position (what the camera is looking at)
 		glm::vec3(0, 1, 0)						// up vector of the camera (orientation/rotation of the camera)
 	); 
-
+	/*
 	glBindVertexArray(wedgeVAO);
 	glBindTexture(GL_TEXTURE_2D, wedge_tex);
 	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(-2, 0, 0));
@@ -232,6 +236,12 @@ void display(void)
 	glBindTexture(GL_TEXTURE_2D, star_tex);
 	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(2, 0, 0));
 	glDrawElements(GL_TRIANGLES, starIndexSize, GL_UNSIGNED_SHORT, 0);
+	*/
+	glBindVertexArray(cylinderVAO);
+	glBindTexture(GL_TEXTURE_2D, star_tex);
+	transformObject(glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), rotAngle, glm::vec3(0, 0, 0));
+	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_SHORT, 0);
+
 
 	rotAngle += 0.75f;
 	glutSwapBuffers();

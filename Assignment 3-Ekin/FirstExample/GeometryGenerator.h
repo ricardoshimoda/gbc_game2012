@@ -8,6 +8,7 @@ public:
 	int CreateStar(GLuint *starVAO);
 	int CreateWedge(GLuint *wedgeVAO);
 	int CreateTriPrism(GLuint *triPrismVAO);
+	int CreateCylinder(GLuint *cylinderVAO);
 private:
 	void crossProduct(float vect_A[], float vect_B[], float cross_P[])
 	{
